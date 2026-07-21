@@ -1,0 +1,32 @@
+class Solution {
+    public int maxActiveSectionsAfterTrade(String s) {
+        String t = "1" + s + "1";
+        int n = t.length();
+        int originalOnes = 0;
+        for (char c : s.toCharArray()) if (c == '1') originalOnes++;
+
+        List<int[]> blocks = new ArrayList<>(); // [char(0/1), length]
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && t.charAt(j) == t.charAt(i)) j++;
+            blocks.add(new int[]{t.charAt(i) - '0', j - i});
+            i = j;
+        }
+
+        int maxZero = 0;
+        for (int[] b : blocks) if (b[0] == 0) maxZero = Math.max(maxZero, b[1]);
+
+        int best = originalOnes;
+        for (int idx = 1; idx < blocks.size() - 1; idx++) {
+            if (blocks.get(idx)[0] == 1) {
+                int len = blocks.get(idx)[1];
+                int left0 = blocks.get(idx - 1)[1];
+                int right0 = blocks.get(idx + 1)[1];
+                best = Math.max(best, originalOnes + left0 + right0);
+                best = Math.max(best, originalOnes - len + maxZero);
+            }
+        }
+        return best;
+    }
+}
